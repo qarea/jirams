@@ -241,6 +241,24 @@ add_config log/level    DEBUG
 add_config log/type     syslog
 add_config log/output   var/log.sock
 
+
+# OPTIONAL Narada files & directories:
+mkdir config/qmail
+mkdir var/mysql
+mkdir var/qmail
+
+add_config mysql/host
+add_config mysql/port 3306
+add_config mysql/db
+add_config mysql/login
+add_config mysql/pass
+add_config mysql/dump/empty
+add_config mysql/dump/ignore
+add_config mysql/dump/incremental
+only_upgrade
+  chmod 0600 config/mysql/pass
+
+
 ### narada-plugin-runit
 
 # restart service_to_restart
@@ -262,18 +280,13 @@ exclude_from_backup ./service/*/log/supervise
 
 restart log
 
-### narada-plugin-go-service
+mkdir var/bolt
 
-add_config http/listen           127.0.0.1:0
-add_config http/basepath         
-add_config http/real_ip_header
+add_config http/listen          127.0.0.1:8001
 
-### narada-tgms-base
-
-add_config lock_timeout          1s
 add_config rsa_public_key
 
-### narada-tgms-base tracker_adapter
-
-add_config http/timeout           10s
+add_config http/basepath
+add_config http/real_ip_header
+add_config lock_timeout          1s
 

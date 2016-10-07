@@ -31,7 +31,7 @@ main() {
 			release_project
 			release_migrate
 			git add ".release/${version}".*         || die 'Failed'
-            git commit -m "Release $version [ci-skip]"        || die 'Failed'
+			git commit -m "Release $version [ci-skip]"        || die 'Failed'
 		fi
 		git tag -a -m release "$version"                || die 'Failed'
 		if git branch -vv | grep -q '^\* \S\+\s\+\S\+ \[origin/'; then
@@ -69,7 +69,7 @@ release_migrate() {
 
 release_version() {
 	list_versions "$2" | grep -q -x -F "$1" && return 0
-    echo -ne "\nrestart main\n" >> "$2"
+	echo -ne "\nrestart main\n" >> "$2"
 	echo -ne "\nINSTALL\nVERSION $1\n\n" >> "$2"
 }
 

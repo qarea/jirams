@@ -22,3 +22,5 @@ staging-mysql.teardown
 
 # Go sources
 .*[.]go
+
+tools/.*

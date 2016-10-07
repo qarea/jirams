@@ -9,11 +9,10 @@ import (
 
 var log = narada.NewLog("")
 
+// Global configuration variables
 var (
-	// LockTimeout for narada.SharedLock
-	LockTimeout time.Duration
-
 	Debug        bool
+	LockTimeout  time.Duration
 	RSAPublicKey []byte
 	MySQL        struct {
 		Host     string
@@ -23,10 +22,8 @@ var (
 		Password string
 	}
 	HTTP struct {
-		Listen   string
-		BasePath string
-		//Default timeout for http requests to adapters
-		Timeout      time.Duration
+		Listen       string
+		BasePath     string
 		RealIPHeader string
 	}
 )
@@ -41,7 +38,7 @@ func load() error {
 	Debug = narada.GetConfigLine("log/level") == "DEBUG"
 
 	HTTP.Listen = narada.GetConfigLine("http/listen")
-	if strings.Index(HTTP.Listen, ":") == -1 {
+	if !strings.Contains(HTTP.Listen, ":") {
 		log.Fatal("please setup config/http/listen")
 	}
 
@@ -51,7 +48,6 @@ func load() error {
 	}
 
 	HTTP.RealIPHeader = narada.GetConfigLine("http/real_ip_header")
-	HTTP.Timeout = narada.GetConfigDuration("http/timeout")
 
 	var err error
 	RSAPublicKey, err = narada.GetConfig("rsa_public_key")
