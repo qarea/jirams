@@ -241,6 +241,24 @@ add_config log/level    DEBUG
 add_config log/type     syslog
 add_config log/output   var/log.sock
 
+
+# OPTIONAL Narada files & directories:
+mkdir config/qmail
+mkdir var/mysql
+mkdir var/qmail
+
+add_config mysql/host
+add_config mysql/port 3306
+add_config mysql/db
+add_config mysql/login
+add_config mysql/pass
+add_config mysql/dump/empty
+add_config mysql/dump/ignore
+add_config mysql/dump/incremental
+only_upgrade
+  chmod 0600 config/mysql/pass
+
+
 ### narada-plugin-runit
 
 # restart service_to_restart
@@ -262,18 +280,205 @@ exclude_from_backup ./service/*/log/supervise
 
 restart log
 
-### narada-plugin-go-service
+INSTALL
+VERSION 0.1.0
 
-add_config http/listen           127.0.0.1:0
-add_config http/basepath         
-add_config http/real_ip_header
+mkdir var/bolt
 
-### narada-tgms-base
+add_config http/listen          127.0.0.1:8001
+add_config http/base_path       /rpc
 
-add_config lock_timeout          1s
+INSTALL
+VERSION 0.2.0
+
+INSTALL
+VERSION 0.3.0
+
+restart main
+restart log
+
 add_config rsa_public_key
+restart main
 
-### narada-tgms-base tracker_adapter
+INSTALL
+VERSION 0.4.0
 
-add_config http/timeout           10s
+
+restart main
+
+INSTALL
+VERSION 0.5.0
+
+
+restart main
+
+INSTALL
+VERSION 0.6.0
+
+
+restart main
+
+INSTALL
+VERSION 0.7.0
+
+restart log
+
+restart main
+
+INSTALL
+VERSION 0.8.0
+
+
+restart main
+
+INSTALL
+VERSION 0.8.1
+
+
+restart main
+
+INSTALL
+VERSION 0.9.0
+
+restart log
+
+restart main
+
+INSTALL
+VERSION 0.9.1
+
+
+restart main
+
+INSTALL
+VERSION 0.10.0
+
+
+restart main
+
+INSTALL
+VERSION 0.11.0
+
+
+restart main
+
+INSTALL
+VERSION 0.11.1
+
+
+restart main
+
+INSTALL
+VERSION 0.12.0
+
+del_config http/base_path
+add_config http/basepath
+add_config http/real_ip_header
+add_config lock_timeout          1s
+restart main
+
+INSTALL
+VERSION 0.13.0
+
+
+restart main
+
+INSTALL
+VERSION 0.14.0
+
+
+restart main
+
+INSTALL
+VERSION 0.15.0
+
+
+restart main
+
+INSTALL
+VERSION 0.16.0
+
+
+restart main
+
+INSTALL
+VERSION 0.17.0
+
+
+restart main
+
+INSTALL
+VERSION 0.18.0
+
+
+restart main
+
+INSTALL
+VERSION 0.19.0
+
+
+restart main
+
+INSTALL
+VERSION 0.20.0
+
+
+restart main
+
+INSTALL
+VERSION 0.21.0
+
+
+restart main
+
+INSTALL
+VERSION 0.22.0
+
+
+restart main
+
+INSTALL
+VERSION 0.23.0
+
+
+restart main
+
+INSTALL
+VERSION 0.24.0
+
+
+restart main
+
+INSTALL
+VERSION 0.25.0
+
+
+restart main
+
+INSTALL
+VERSION 0.26.0
+
+
+restart main
+
+INSTALL
+VERSION 0.27.0
+
+
+restart main
+
+INSTALL
+VERSION 0.28.0
+
+
+restart main
+
+INSTALL
+VERSION 0.29.0
+
+
+restart main
+
+INSTALL
+VERSION 0.30.0
 

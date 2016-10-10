@@ -1,72 +1,92 @@
 package entities
 
+// EntityID - generic entity ID type
+type EntityID uint64
+
+// Project - TG project entity
 type Project struct {
 	ID            ProjectID
 	Title         string
-	Link          string
 	Description   string
-	IssueTypes    []TypeID
-	ActivityTypes []TypeID
+	IssueTypes    []NamedID
+	ActivityTypes []NamedID
 }
 
-type Tracker struct {
-	ID          int64
+// ProjectID - project ID
+type ProjectID uint64
+
+// NamedID - id + name entity structure
+type NamedID struct {
+	ID   uint64
+	Name string
+}
+
+// TrackerConfig - TG tracker configuration
+type TrackerConfig struct {
+	ID          TrackerID
 	URL         string
-	Type        string
-	Credentials Credentials
+	Credentials TrackerCredentials
 }
 
-type Credentials struct {
+// TrackerID - tracker id
+type TrackerID uint64
+
+// TrackerCredentials - TG tracker credentials
+type TrackerCredentials struct {
 	Login    string
 	Password string
 }
 
-type TypeID struct {
-	ID   int64
-	Name string
-}
-
-type Issue struct {
-	ID          IssueID
-	ProjectID   ProjectID `json:"-"`
-	Type        TypeID
-	Title       string
-	Description string
-	Estimate    int64
-	DueDate     int64
-	Done        Progress
-	Spent       int64
-	URL         string
-}
-
-type NewIssue struct {
-	Issue
-	// Be carefule with NewIssue type
-	// Type field inside Issue will be empty
-	// We have only id of Type with NewIssue
-	Type int64
-}
-
+// User - TG user
 type User struct {
-	ID   string
+	ID   UserID
 	Name string
 	Mail string
 }
 
+// UserID - user ID
+type UserID uint64
+
+// UserKey - JIRA user indetifier string
+type UserKey string
+
+// Issue - TG issue
+type Issue struct {
+	ID       IssueID
+	Type     NamedID
+	URL      string
+	Title    string
+	Estimate Duration
+	DueDate  Timestamp
+	Spent    Duration
+	Done     uint8
+}
+
+// IssueID - issue ID
+type IssueID uint64
+
+// NewIssue - set of parameters for new issue
+type NewIssue struct {
+	ProjectID ProjectID
+	Assignee  UserID
+	Type      EntityID
+	Title     string
+	Estimate  uint64
+}
+
+// Report - set of parameters for new work time report
 type Report struct {
-	IssueID    IssueID
-	ActivityID int64
-	Comments   string
-	Duration   int64 //In seconds
-	Started    int64
+	IssueID  IssueID
+	Started  Timestamp
+	Duration Duration
+	Comments string
 }
 
-type Pagination struct {
-	Offset int
-	Limit  int
-}
+// Timestamp - unix timestamp
+type Timestamp uint64
 
-type ProjectID string
-type IssueID string
-type Progress int
-type IssueURL string
+// Duration - time duration in seconds
+type Duration uint64
+
+// ReportsTotal - total amount of reported time in seconds
+type ReportsTotal uint64

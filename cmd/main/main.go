@@ -2,34 +2,23 @@
 package main
 
 import (
-	"github.com/powerman/narada-go/narada/bootstrap"
-	"gitlab.qarea.org/tgms/ctxtg"
-
-	"net/http"
+	"github.com/boltdb/bolt"
+	"github.com/qarea/jirams/cfg"
 
 	"github.com/powerman/narada-go/narada"
-	"github.com/prometheus/client_golang/prometheus"
-
-	"../../api/rpcsvc"
-	"../../cfg"
-	"../../tracker"
 )
 
-var log = narada.NewLog("")
+var l = narada.NewLog("")
 
 func main() {
-	p, err := ctxtg.NewRSATokenParser(cfg.RSAPublicKey)
+	db, err := bolt.Open("var/bolt/store.db", 0666, nil)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err)
 	}
+	defer func() { _ = db.Close() }()
 
-	tr := tracker.NewClient()
-	rpcsvc.Init(tr, p)
-
-	if err := bootstrap.Unlock(); err != nil {
-		log.Fatal(err)
-	}
-	http.Handle(cfg.HTTP.BasePath+"/metrics", prometheus.Handler())
-	log.NOTICE("Listening on %s", cfg.HTTP.Listen+cfg.HTTP.BasePath)
-	log.Fatal(http.ListenAndServe(cfg.HTTP.Listen, nil))
+	start(appParams{
+		BoltDB:    db,
+		PublicKey: cfg.RSAPublicKey,
+	})
 }

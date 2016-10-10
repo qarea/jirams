@@ -1,0 +1,18 @@
+#!/bin/bash
+# Default setup for Narada staging with mysql.
+# Use by symlinking ln -s ../../staging-mysql.setup staging.setup to testdata dir in test package
+
+
+source "$1/../staging.setup"
+
+testdb-creds
+
+narada-setup-mysql
+
+# Put your migration sripts hear
+##narada-mysql < "$1/../.release/sql/000_script1.sql"
+##narada-mysql < "$1/../.release/sql/001_script2.sql"
+
+narada-mysqldump
+
+narada-setup-mysql --clean
