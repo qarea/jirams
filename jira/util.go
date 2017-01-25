@@ -3,7 +3,6 @@ package jira
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -29,12 +28,6 @@ func (requester *Requester) Request(tracker entities.TrackerConfig, request *htt
 		return err
 	}
 	defer response.Body.Close()
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return err
-	}
-
 	if response.StatusCode >= 400 {
 		switch response.StatusCode {
 		case 401:
@@ -49,15 +42,10 @@ func (requester *Requester) Request(tracker entities.TrackerConfig, request *htt
 			return entities.ErrInvalidRequest
 		}
 	}
-
-	if res != nil {
-		if err = json.Unmarshal(body, res); err != nil {
-			l.ERR(err.Error())
-			return err
-		}
+	if res == nil {
+		return nil
 	}
-
-	return nil
+	return json.NewDecoder(response.Body).Decode(res)
 }
 
 // IterateRequest performs requests to specified URL until all items are retrieved

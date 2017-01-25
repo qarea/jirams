@@ -266,6 +266,20 @@ func TestGetProjectsInvalidTracker(t *testing.T) {
 	}
 }
 
+func TestGetProjectsError(t *testing.T) {
+	a := assert.New(t)
+	client := Client{&MockStore{}, &TestJiraRequesterErr{entities.ErrNotFound}}
+	err := client.GetProjects(testTracker, nil)
+	a.Equal(entities.ErrNotFound, err)
+}
+
+func TestGetCurrentUserError(t *testing.T) {
+	a := assert.New(t)
+	client := Client{&MockStore{}, &TestJiraRequesterErr{entities.ErrNotFound}}
+	err := client.GetCurrentUser(testTracker, nil)
+	a.Equal(entities.ErrNotFound, err)
+}
+
 func TestGetCurrentUser(t *testing.T) {
 	requests := map[string]testRequest{
 		"OK": {
@@ -336,18 +350,6 @@ func TestGetProjectIssues(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, result)
 	testRequester.AssertExpectations(t)
-}
-
-type TestJiraRequesterErr struct {
-	err error
-}
-
-func (t *TestJiraRequesterErr) Request(entities.TrackerConfig, *http.Request, interface{}) error {
-	return t.err
-}
-
-func (t *TestJiraRequesterErr) IterateRequest(entities.TrackerConfig, string, interface{}, func(interface{}) (int, int, error)) error {
-	return t.err
 }
 
 func TestGetIssueError(t *testing.T) {
@@ -436,6 +438,16 @@ func TestGetIssueByURL(t *testing.T) {
 	assert.Equal(t, expected, result)
 	assert.Equal(t, expected2, result2)
 	testRequester.AssertExpectations(t)
+}
+
+func TestCreateIssueStorageErr(t *testing.T) {
+	a := assert.New(t)
+	client := Client{&TestStore{err: entities.ErrNotFound}, &TestJiraRequesterErr{}}
+	err := client.CreateIssue(testTracker, entities.NewIssue{}, nil)
+	a.Error(err)
+	client = Client{&TestStore{key: ""}, &TestJiraRequesterErr{}}
+	err = client.CreateIssue(testTracker, entities.NewIssue{}, nil)
+	a.Error(err)
 }
 
 func TestCreateIssue(t *testing.T) {
@@ -598,4 +610,33 @@ func TestGetTotalReports(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, result)
 	testRequester.AssertExpectations(t)
+}
+
+type TestJiraRequesterErr struct {
+	err error
+}
+
+func (t *TestJiraRequesterErr) Request(entities.TrackerConfig, *http.Request, interface{}) error {
+	return t.err
+}
+
+func (t *TestJiraRequesterErr) IterateRequest(entities.TrackerConfig, string, interface{}, func(interface{}) (int, int, error)) error {
+	return t.err
+}
+
+type TestStore struct {
+	err error
+	key string
+	res entities.UserID
+}
+
+func (t *TestStore) Init() {
+}
+
+func (t *TestStore) GetID(trackerID entities.TrackerID, key entities.UserKey) (res entities.UserID, err error) {
+	return t.res, t.err
+}
+
+func (t *TestStore) GetKey(trackerID entities.TrackerID, userID entities.UserID) (res string, err error) {
+	return t.key, t.err
 }
