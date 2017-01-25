@@ -134,9 +134,10 @@ func (client *Client) GetIssue(tracker entities.TrackerConfig, issueID entities.
 	return nil
 }
 
+var re = regexp.MustCompile("(issues|browse)\\/([0-9A-Z-]+)")
+
 // GetIssueByURL attempts to parse provided URL and retrieve corresponding issue
 func (client *Client) GetIssueByURL(tracker entities.TrackerConfig, issueURL string, res *entities.Issue, res2 *entities.ProjectID) error {
-	re := regexp.MustCompile("(issues|browse)\\/([0-9A-Z-]+)")
 	matches := re.FindStringSubmatch(issueURL)
 	if matches == nil {
 		return errors.New("Failed to parse Issue URL")

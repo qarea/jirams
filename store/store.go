@@ -57,10 +57,7 @@ func (store *Store) GetID(trackerID entities.TrackerID, key entities.UserKey) (r
 		found := userKeys.Get([]byte(key))
 		// if key already known, return it's ID
 		if found != nil {
-			rawRes := userKeys.Get([]byte(key))
-			if rawRes != nil {
-				res = entities.UserID(btoi(rawRes))
-			}
+			res = entities.UserID(btoi(found))
 			return nil
 		}
 

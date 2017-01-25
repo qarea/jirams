@@ -3,6 +3,7 @@ package jira
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"testing"
@@ -337,6 +338,28 @@ func TestGetProjectIssues(t *testing.T) {
 	testRequester.AssertExpectations(t)
 }
 
+type TestJiraRequesterErr struct {
+	err error
+}
+
+func (t *TestJiraRequesterErr) Request(entities.TrackerConfig, *http.Request, interface{}) error {
+	return t.err
+}
+
+func (t *TestJiraRequesterErr) IterateRequest(entities.TrackerConfig, string, interface{}, func(interface{}) (int, int, error)) error {
+	return t.err
+}
+
+func TestGetIssueError(t *testing.T) {
+	a := assert.New(t)
+	client := Client{&MockStore{}, &TestJiraRequesterErr{entities.ErrNotFound}}
+	err := client.GetIssue(testTracker, entities.IssueID(10000), nil)
+	a.Equal(entities.ErrIssueNotFound, err)
+	client = Client{&MockStore{}, &TestJiraRequesterErr{errors.New("123")}}
+	err = client.GetIssue(testTracker, entities.IssueID(10000), nil)
+	a.Error(err)
+}
+
 func TestGetIssue(t *testing.T) {
 	requests := map[string]testRequest{
 		"OK": {
@@ -365,6 +388,21 @@ func TestGetIssue(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expected, result)
 	testRequester.AssertExpectations(t)
+}
+
+func TestGetIssueByURLError(t *testing.T) {
+	var result entities.Issue
+	var result2 entities.ProjectID
+	a := assert.New(t)
+	client := Client{&MockStore{}, &TestJiraRequesterErr{entities.ErrNotFound}}
+	err := client.GetIssueByURL(testTracker, "https://tracker.com/browse/10000", &result, &result2)
+	a.Equal(entities.ErrIssueNotFound, err)
+	client = Client{&MockStore{}, &TestJiraRequesterErr{errors.New("123")}}
+	err = client.GetIssueByURL(testTracker, "https://tracker.com/browse/10000", &result, &result2)
+	a.Error(err)
+	err = client.GetIssueByURL(testTracker, "httpsxx00", &result, &result2)
+	a.Error(err)
+
 }
 
 func TestGetIssueByURL(t *testing.T) {

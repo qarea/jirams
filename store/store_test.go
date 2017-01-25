@@ -26,6 +26,11 @@ func TestStore(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, entities.UserID(1), id)
 
+	// already known key
+	id, err = store.GetID(1, "TEST")
+	assert.Nil(t, err)
+	assert.Equal(t, entities.UserID(1), id)
+
 	// add another key, add incremented id
 	id, err = store.GetID(1, "TEST2")
 	assert.Nil(t, err)

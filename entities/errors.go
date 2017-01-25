@@ -1,11 +1,11 @@
 package entities
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/powerman/narada-go/narada"
 	"github.com/powerman/rpc-codec/jsonrpc2"
-	"golang.org/x/net/context"
 )
 
 // Service specific API errors

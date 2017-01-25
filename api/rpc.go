@@ -133,8 +133,5 @@ func (api *API) GetIssueByURL(req GetIssueByURLRequest, res *GetIssueByURLRespon
 // UpdateIssueProgress provides dummy implementation of corrcponding method
 // as the feature is not supported by JIRA
 func (api *API) UpdateIssueProgress(req UpdateIssueProgressRequest, res *UpdateIssueProgressResponse) (err error) {
-	err = api.Parser.ParseCtxWithClaims(req.Context, func(ctx context.Context, claims ctxtg.Claims) error {
-		return nil
-	})
 	return
 }
